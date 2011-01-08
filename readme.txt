@@ -8,6 +8,10 @@ Stable tag: 0.9
 
 Webfinger for WordPress!
 
+== Description ==
+
+Webfinger for WordPress!
+
 This plugin requires:
 
 * the `/.well-known/`-plugin: http://wordpress.org/extend/plugins/well-known/
