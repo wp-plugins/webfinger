@@ -3,7 +3,7 @@
 Plugin Name: Webfinger
 Plugin URI: http://wordpress.org/extend/plugins/webfinger/
 Description: Webfinger for WordPress
-Version: 0.9
+Version: 0.9.1
 Author: Matthias Pfefferle
 Author URI: http://notizblog.org/
 */
@@ -95,6 +95,7 @@ class WebfingerPlugin {
       
       $url = get_author_posts_url($user->ID, $user->user_nicename);
       
+      header("Access-Control-Allow-Origin: *");
       header('Content-Type: application/xrd+xml; charset=' . get_option('blog_charset'), true);
 
       echo "<?xml version='1.0' encoding='".get_option('blog_charset')."'?>\n";
