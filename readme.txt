@@ -1,16 +1,17 @@
 === Webfinger ===
 Contributors: pfefferle
 Donate link: http://14101978.de
-Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack
+Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack, simple web discovery, swd
 Requires at least: 2.7
 Tested up to: 3.2
-Stable tag: 0.9.1
+Stable tag: 1.0
 
-Webfinger for WordPress!
+Webfinger (and simple-web-discovery) for WordPress!
 
 == Description ==
 
-Webfinger for WordPress!
+Webfinger: http://code.google.com/p/webfinger/
+simple-web-discovery: http://tools.ietf.org/html/draft-jones-simple-web-discovery
 
 This plugin requires:
 
@@ -20,6 +21,10 @@ This plugin requires:
 more doku soon!
 
 == Changelog ==
+= 1.0 =
+* basic simple-seb-discovery
+* json support
+* some small improvements
 = 0.9.1 =
 * some changes to support http://unhosted.org
 = 0.9 =
