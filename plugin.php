@@ -3,7 +3,7 @@
 Plugin Name: Webfinger
 Plugin URI: http://wordpress.org/extend/plugins/webfinger/
 Description: Webfinger for WordPress
-Version: 1.0
+Version: 1.0.1
 Author: Matthias Pfefferle
 Author URI: http://notizblog.org/
 */
@@ -185,7 +185,7 @@ class WebfingerPlugin {
 		                     array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $url),
 		                     array('rel' => 'http://webfinger.net/rel/avatar',  'href' => 'http://www.gravatar.com/avatar/'.md5( $this->user->user_email ).'.jpg')
 		                   ));
-		$webfinger = apply_filters('webfinger', $webfinger);
+		$webfinger = apply_filters('webfinger', $webfinger, $this->user);
 		
 		return $webfinger;
 	}
