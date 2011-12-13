@@ -3,7 +3,7 @@
 Plugin Name: Webfinger
 Plugin URI: http://wordpress.org/extend/plugins/webfinger/
 Description: Webfinger for WordPress
-Version: 1.0.1
+Version: 1.1
 Author: Matthias Pfefferle
 Author URI: http://notizblog.org/
 */
@@ -178,13 +178,18 @@ class WebfingerPlugin {
 	 */
 	public function generate_content() {
 	  $url = get_author_posts_url($this->user->ID, $this->user->user_nicename);
-
+    $photo = get_user_meta($this->user->ID, 'photo', true);
+    if(!$photo) $photo = 'http://www.gravatar.com/avatar/'.md5($this->user->user_email);
+    
 		$webfinger = array('subject' => $this->webfinger_uri,
 		                   'aliases' => array($url),
 		                   'links' => array(
 		                     array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $url),
-		                     array('rel' => 'http://webfinger.net/rel/avatar',  'href' => 'http://www.gravatar.com/avatar/'.md5( $this->user->user_email ).'.jpg')
+		                     array('rel' => 'http://webfinger.net/rel/avatar',  'href' => $photo)
 		                   ));
+		if ($this->user->user_url) {
+		  $webfinger['links'][] = array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $this->user->user_url);
+		}
 		$webfinger = apply_filters('webfinger', $webfinger, $this->user);
 		
 		return $webfinger;
@@ -403,17 +408,20 @@ class WebfingerPlugin {
   }
 }
 
-$webfinger = new WebfingerPlugin();
+function webfinger_init() {
+  $webfinger = new WebfingerPlugin();
 
-add_action('well_known_simple-web-discovery', array(&$webfinger, 'render_simple_web_discovery'), 2);
-add_filter('query_vars', array(&$webfinger, 'query_vars'));
-add_action('parse_request', array(&$webfinger, 'parse_request'));
-add_action('wp_head', array(&$webfinger, 'add_html_link'));
-//add_action('host_meta_xrd', array(&$webfinger, 'add_host_meta_link'));
-add_filter('host_meta', array(&$webfinger, 'add_host_meta_info'));
-add_filter('plugin_action_links', array(&$webfinger, 'settings_link'), 10, 2);
+  add_action('well_known_simple-web-discovery', array(&$webfinger, 'render_simple_web_discovery'), 2);
+  add_filter('query_vars', array(&$webfinger, 'query_vars'));
+  add_action('parse_request', array(&$webfinger, 'parse_request'));
+  add_action('wp_head', array(&$webfinger, 'add_html_link'));
+  add_filter('host_meta', array(&$webfinger, 'add_host_meta_info'));
+  add_filter('plugin_action_links', array(&$webfinger, 'settings_link'), 10, 2);
 
-// add profile parts
-add_action('show_user_profile', array(&$webfinger, 'user_profile_infos'));
-add_action('edit_user_profile', array(&$webfinger, 'user_profile_infos'));
+  // add profile parts
+  add_action('show_user_profile', array(&$webfinger, 'user_profile_infos'));
+  add_action('edit_user_profile', array(&$webfinger, 'user_profile_infos'));
+}
+
+webfinger_init();
 ?>
