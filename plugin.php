@@ -3,7 +3,7 @@
 Plugin Name: Webfinger
 Plugin URI: http://wordpress.org/extend/plugins/webfinger/
 Description: Webfinger for WordPress
-Version: 1.1
+Version: 1.2
 Author: Matthias Pfefferle
 Author URI: http://notizblog.org/
 */
@@ -92,7 +92,9 @@ class WebfingerPlugin {
 
     if( array_key_exists('webfinger-uri', $query_vars) ) {
       if (!$this->user = $this->get_user_by_uri($query_vars['webfinger-uri'])) {
-        return null;
+        header("HTTP/1.0 404 Not Found");
+    		echo "Not Found";
+    		exit;
       }
       
       $this->webfinger_uri = $query_vars['webfinger-uri'];
@@ -105,8 +107,6 @@ class WebfingerPlugin {
 			}
 			
 			exit;
-    } else {
-      return null;
     }
   }
   
@@ -321,7 +321,7 @@ class WebfingerPlugin {
    */
   public function add_host_meta_info($array) {
 	  $array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}", "type" => "application/xrd+xml");
-		//$array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}?format=json", "type" => "application/json");
+		$array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}?format=json", "type" => "application/json");
 
 	  return $array;
   }
