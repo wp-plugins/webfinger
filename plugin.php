@@ -3,7 +3,7 @@
 Plugin Name: Webfinger
 Plugin URI: http://wordpress.org/extend/plugins/webfinger/
 Description: Webfinger for WordPress
-Version: 1.2
+Version: 1.3
 Author: Matthias Pfefferle
 Author URI: http://notizblog.org/
 */
@@ -74,9 +74,10 @@ class WebfingerPlugin {
   public function query_vars($vars) {
     $vars[] = 'webfinger-uri';
     $vars[] = 'webfinger';
-		$vars[] = 'format';
-		$vars[] = 'principal';
-		$vars[] = 'service';
+    $vars[] = 'format';
+    $vars[] = 'principal';
+    $vars[] = 'service';
+    $vars[] = 'resource';
     return $vars;
   }
   
@@ -93,182 +94,182 @@ class WebfingerPlugin {
     if( array_key_exists('webfinger-uri', $query_vars) ) {
       if (!$this->user = $this->get_user_by_uri($query_vars['webfinger-uri'])) {
         header("HTTP/1.0 404 Not Found");
-    		echo "Not Found";
-    		exit;
+        echo "Not Found";
+        exit;
       }
       
       $this->webfinger_uri = $query_vars['webfinger-uri'];
-			$accept = explode(',', $_SERVER['HTTP_ACCEPT']);
-			
-			if (in_array('application/json', $accept) || (array_key_exists('format', $query_vars) && $query_vars['format'] == "json")) {
-				$this->render_jrd();
-			} else {
-				$this->render_xrd();
-			}
-			
-			exit;
+      $accept = explode(',', $_SERVER['HTTP_ACCEPT']);
+      
+      if (in_array('application/json', $accept) || (array_key_exists('format', $query_vars) && $query_vars['format'] == "json")) {
+        $this->render_jrd();
+      } else {
+        $this->render_xrd();
+      }
+      
+      exit;
     }
   }
   
   public function render_simple_web_discovery($request) {
-		$this->user = $this->get_user_by_uri($request['principal']);
-		$this->webfinger_uri = $request['principal'];
+    $this->user = $this->get_user_by_uri($request['principal']);
+    $this->webfinger_uri = $request['principal'];
     
-		if ($this->user) {
-		  $content = $this->generate_content();
-		  
-  		$swd = array();
-  		foreach ($content['links'] as $link) {
-  		  if ($link['rel'] == $request['service']) {
-  		    $swd['locations'][] = $link['href'];
-  		  } 
-  		}
+    if ($this->user) {
+      $content = $this->generate_content();
+      
+      $swd = array();
+      foreach ($content['links'] as $link) {
+        if ($link['rel'] == $request['service']) {
+          $swd['locations'][] = $link['href'];
+        } 
+      }
     
-  		$swd = apply_filters('simple_web_discovery', $swd, $this->user, $request['service']);
-  		
-  		if ($swd) {
-  		  header("Access-Control-Allow-Origin: *");
-  			header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
-  			echo json_encode($swd);
-  			exit;
-  		}
-		}
+      $swd = apply_filters('simple_web_discovery', $swd, $this->user, $request['service']);
+      
+      if ($swd) {
+        header("Access-Control-Allow-Origin: *");
+        header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+        echo json_encode($swd);
+        exit;
+      }
+    }
     
-		header("HTTP/1.0 404 Not Found");
-		echo "Not Found";
-		exit;
+    header("HTTP/1.0 404 Not Found");
+    echo "Not Found";
+    exit;
   }
   
   /**
-	 * renders the webfinger file in xml
+   * renders the webfinger file in xml
    */
   public function render_xrd() {
     header("Access-Control-Allow-Origin: *");
-	  header('Content-Type: application/xrd+xml; charset=' . get_option('blog_charset'), true);
-		$content_array = $this->generate_content();
-		
-		echo "<?xml version='1.0' encoding='".get_option('blog_charset')."'?>\n";
+    header('Content-Type: application/xrd+xml; charset=' . get_option('blog_charset'), true);
+    $content_array = $this->generate_content();
+    
+    echo "<?xml version='1.0' encoding='".get_option('blog_charset')."'?>\n";
     echo "<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'\n";
       // add xml-only namespaces
       do_action('webfinger_ns');
     echo ">\n";
 
     echo $this->jrd_to_xrd($content_array);
-		  // add xml-only content
-	  	do_action('webfinger_xrd', $this->user);
-		
+      // add xml-only content
+      do_action('webfinger_xrd', $this->user);
+    
     echo "\n</XRD>";
-	}
-	
-	/**
-	 * renders the webfinger file in json
+  }
+  
+  /**
+   * renders the webfinger file in json
    */
-	public function render_jrd() {
-	  header("Access-Control-Allow-Origin: *");
-	  header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
-		$webfinger = $this->generate_content();
+  public function render_jrd() {
+    header("Access-Control-Allow-Origin: *");
+    header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+    $webfinger = $this->generate_content();
 
-		echo json_encode($webfinger);
-	}
-	
-	/**
-	 * generates the webfinger base array (and activate filter)
-	 *
-	 * @return array
-	 */
-	public function generate_content() {
-	  $url = get_author_posts_url($this->user->ID, $this->user->user_nicename);
+    echo json_encode($webfinger);
+  }
+  
+  /**
+   * generates the webfinger base array (and activate filter)
+   *
+   * @return array
+   */
+  public function generate_content() {
+    $url = get_author_posts_url($this->user->ID, $this->user->user_nicename);
     $photo = get_user_meta($this->user->ID, 'photo', true);
     if(!$photo) $photo = 'http://www.gravatar.com/avatar/'.md5($this->user->user_email);
     
-		$webfinger = array('subject' => $this->webfinger_uri,
-		                   'aliases' => array($url),
-		                   'links' => array(
-		                     array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $url),
-		                     array('rel' => 'http://webfinger.net/rel/avatar',  'href' => $photo)
-		                   ));
-		if ($this->user->user_url) {
-		  $webfinger['links'][] = array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $this->user->user_url);
-		}
-		$webfinger = apply_filters('webfinger', $webfinger, $this->user);
-		
-		return $webfinger;
-	}
-	
-	/**
-	 * recursive helper to generade the xrd-xml from the jrd array
+    $webfinger = array('subject' => $this->webfinger_uri,
+                       'aliases' => array($url),
+                       'links' => array(
+                         array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $url),
+                         array('rel' => 'http://webfinger.net/rel/avatar',  'href' => $photo)
+                       ));
+    if ($this->user->user_url) {
+      $webfinger['links'][] = array('rel' => 'http://webfinger.net/rel/profile-page', 'type' => 'text/html', 'href' => $this->user->user_url);
+    }
+    $webfinger = apply_filters('webfinger', $webfinger, $this->user);
+    
+    return $webfinger;
+  }
+  
+  /**
+   * recursive helper to generade the xrd-xml from the jrd array
    *
- 	 * @param string $host_meta
- 	 * @return string
-	 */
-	public function jrd_to_xrd($webfinger) {
-	  $xrd = null;
+   * @param string $host_meta
+   * @return string
+   */
+  public function jrd_to_xrd($webfinger) {
+    $xrd = null;
 
-	  foreach ($webfinger as $type => $content) {
-			// print subject
-			if ($type == "subject") {
-				$xrd .= "<Subject>$content</Subject>";
-				continue;
-			}
-			
-			// print aliases
-			if ($type == "aliases") {
-			  foreach ($content as $uri) {
-			    $xrd .= "<Alias>".htmlentities($uri)."</Alias>";
-			  }
-			  continue;
-			}
-			
-			// print properties
-			if ($type == "properties") {
-			  foreach ($content as $type => $uri) {
-			    $xrd .= "<Property type='".htmlentities($type)."'>".htmlentities($uri)."</Property>";
-			  }
-			  continue;
-			}
-			
-			// print titles
-			if ($type == "titles") {
-			  foreach ($content as $key => $value) {
-			    if ($key == "default") {
-			      $xrd .= "<Title>".htmlentities($value)."</Title>";
-			    } else {
-			      $xrd .= "<Title xml:lang='".htmlentities($key)."'>".htmlentities($value)."</Title>";
-			    }
-			  }
-			  continue;
-			}
-			
-			// print links
-			if ($type == "links") {
-			  foreach ($content as $links) {
-			    $temp = array();
-			    $cascaded = false;
-			    $xrd .= "<Link ";
+    foreach ($webfinger as $type => $content) {
+      // print subject
+      if ($type == "subject") {
+        $xrd .= "<Subject>$content</Subject>";
+        continue;
+      }
+      
+      // print aliases
+      if ($type == "aliases") {
+        foreach ($content as $uri) {
+          $xrd .= "<Alias>".htmlentities($uri)."</Alias>";
+        }
+        continue;
+      }
+      
+      // print properties
+      if ($type == "properties") {
+        foreach ($content as $type => $uri) {
+          $xrd .= "<Property type='".htmlentities($type)."'>".htmlentities($uri)."</Property>";
+        }
+        continue;
+      }
+      
+      // print titles
+      if ($type == "titles") {
+        foreach ($content as $key => $value) {
+          if ($key == "default") {
+            $xrd .= "<Title>".htmlentities($value)."</Title>";
+          } else {
+            $xrd .= "<Title xml:lang='".htmlentities($key)."'>".htmlentities($value)."</Title>";
+          }
+        }
+        continue;
+      }
+      
+      // print links
+      if ($type == "links") {
+        foreach ($content as $links) {
+          $temp = array();
+          $cascaded = false;
+          $xrd .= "<Link ";
 
-			    foreach ($links as $key => $value) {
-  			    if (is_array($value)) {
-  			      $temp[$key] = $value;
-  			      $cascaded = true;
-  			    } else {
-  			      $xrd .= htmlentities($key)."='".htmlentities($value)."' ";
-  			    }
-			    }
+          foreach ($links as $key => $value) {
+            if (is_array($value)) {
+              $temp[$key] = $value;
+              $cascaded = true;
+            } else {
+              $xrd .= htmlentities($key)."='".htmlentities($value)."' ";
+            }
+          }
           if ($cascaded) {
-  			    $xrd .= ">";
+            $xrd .= ">";
             $xrd .= $this->jrd_to_xrd($temp);
-  			    $xrd .= "</Link>";
-  			  } else {
-  			    $xrd .= " />";
-  			  }
-			  }
-			  
-			  continue;
-			}
-		}
-		
-		return $xrd;
-	}
+            $xrd .= "</Link>";
+          } else {
+            $xrd .= " />";
+          }
+        }
+        
+        continue;
+      }
+    }
+    
+    return $xrd;
+  }
   
   /**
    * returns a Userobject 
@@ -308,22 +309,15 @@ class WebfingerPlugin {
     
     return false;
   }
-  
-  /**
-   * add the host meta information
-   */
-  public function add_host_meta_link() {     
-    echo "<Link rel='lrdd' template='".get_option('siteurl')."/?webfinger-uri={uri}' type='application/xrd+xml' />";
-  }
 
   /**
    * add the host meta information
    */
   public function add_host_meta_info($array) {
-	  $array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}", "type" => "application/xrd+xml");
-		$array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}?format=json", "type" => "application/json");
+    $array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}", "type" => "application/xrd+xml");
+    $array["links"][] = array("rel" => "lrdd", "template" => get_option('siteurl')."/?webfinger-uri={uri}?format=json", "type" => "application/json");
 
-	  return $array;
+    return $array;
   }
   
   /**
@@ -406,11 +400,42 @@ class WebfingerPlugin {
       return get_userdatabylogin($id_or_name_or_object);
     }
   }
+  
+  /**
+   * host-meta resource feature
+   *
+   * @param array $query
+   */
+  public function render_host_meta($query) {
+    if (!array_key_exists("resource", $query)) {
+      return;
+    }
+    
+    // match user
+    if (!$this->user = $this->get_user_by_uri($query['resource'])) {
+      header("HTTP/1.0 404 Not Found");
+      echo "Resource ".$query['resource']." not found";
+      exit;
+    }
+    
+    $this->webfinger_uri = $query['resource'];
+    
+    if ($query['well-known'] == "host-meta.json") {
+      $this->render_jrd();
+    } else {
+      $this->render_xrd();
+    }
+    exit;
+  }
 }
 
 function webfinger_init() {
   $webfinger = new WebfingerPlugin();
-
+  
+  // host-meta resource
+  add_action('well_known_host-meta', array(&$webfinger, 'render_host_meta'), -1, 1);
+  add_action('well_known_host-meta.json', array(&$webfinger, 'render_host_meta'), -1, 1);
+  // simple web discovery
   add_action('well_known_simple-web-discovery', array(&$webfinger, 'render_simple_web_discovery'), 2);
   add_filter('query_vars', array(&$webfinger, 'query_vars'));
   add_action('parse_request', array(&$webfinger, 'parse_request'));
