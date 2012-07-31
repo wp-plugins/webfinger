@@ -3,14 +3,15 @@ Contributors: pfefferle
 Donate link: http://14101978.de
 Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack, simple web discovery, swd
 Requires at least: 2.7
-Tested up to: 3.3.1
-Stable tag: 1.3
+Tested up to: 3.4.1
+Stable tag: 1.3.1
 
 Webfinger (and simple-web-discovery) for WordPress!
 
 == Description ==
 
-Webfinger: http://tools.ietf.org/html/draft-jones-appsawg-webfinger
+Webfinger: http://tools.ietf.org/html/draft-ietf-appsawg-webfinger
+
 simple-web-discovery: http://tools.ietf.org/html/draft-jones-simple-web-discovery
 
 This plugin requires:
@@ -21,6 +22,9 @@ This plugin requires:
 more doku soon!
 
 == Changelog ==
+= 1.3.1 =
+* added "rel"-filter (work in progress)
+* added more aliases
 = 1.3 =
 * added host-meta resource feature (see latest spec)
 = 1.2 =
