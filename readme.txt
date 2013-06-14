@@ -3,25 +3,28 @@ Contributors: pfefferle
 Donate link: http://14101978.de
 Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack, simple web discovery, swd
 Requires at least: 2.7
-Tested up to: 3.4.1
-Stable tag: 1.3.1
+Tested up to: 3.5.1
+Stable tag: 2.0.1
 
-Webfinger (and simple-web-discovery) for WordPress!
+Webfinger for WordPress!
 
 == Description ==
 
 Webfinger: http://tools.ietf.org/html/draft-ietf-appsawg-webfinger
 
-simple-web-discovery: http://tools.ietf.org/html/draft-jones-simple-web-discovery
-
-This plugin requires:
-
-* the `/.well-known/`-plugin: http://wordpress.org/extend/plugins/well-known/
-* the `host-meta`-plugin: http://wordpress.org/extend/plugins/host-meta/
-
 more doku soon!
 
 == Changelog ==
+= 2.0.1 =
+* small bugfix
+= 2.0.0 =
+* complete refactoring
+* removed simple-web-discovery
+* more filters and actions
+* works without /.well-known/ plugin
+= 1.4.0 =
+* small fixes
+* added "webfinger" as well-known uri
 = 1.3.1 =
 * added "rel"-filter (work in progress)
 * added more aliases
@@ -55,12 +58,8 @@ more doku soon!
 
 == Installation ==
 
-1. You have to download and install the `/.well-known/`-plugin first: http://wordpress.org/extend/plugins/well-known/
-2. Then have to download and install the `host-meta`-plugin: http://wordpress.org/extend/plugins/host-meta/
-3. Then you have to upload the `host-meta`-folder to the `/wp-content/plugins/` directory
-4. Activate the plugin through the *Plugins* menu in WordPress
-5. ...and that's it :)
+1. Upload the `webfinger`-folder to the `/wp-content/plugins/` directory
+2. Activate the plugin through the *Plugins* menu in WordPress
+3. ...and that's it :)
 
 == Frequently Asked Questions ==
-
-soon...
