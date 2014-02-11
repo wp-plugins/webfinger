@@ -1,60 +1,29 @@
-=== Webfinger ===
-Contributors: pfefferle
+=== WebFinger ===
+Contributors: pfefferle, willnorris
 Donate link: http://14101978.de
-Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack, simple web discovery, swd
+Tags: well-known, discovery, webfinger, JRD
 Requires at least: 2.7
-Tested up to: 3.5.1
-Stable tag: 2.0.1
+Tested up to: 3.6.1
+Stable tag: 3.0.0
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Webfinger for WordPress!
+WebFinger for WordPress!
 
 == Description ==
 
-Webfinger: http://tools.ietf.org/html/draft-ietf-appsawg-webfinger
+Enables WebFinger ([RFC 7033](http://tools.ietf.org/html/rfc7033)) support for WordPress.
 
-more doku soon!
+About WebFinger:
 
-== Changelog ==
-= 2.0.1 =
-* small bugfix
-= 2.0.0 =
-* complete refactoring
-* removed simple-web-discovery
-* more filters and actions
-* works without /.well-known/ plugin
-= 1.4.0 =
-* small fixes
-* added "webfinger" as well-known uri
-= 1.3.1 =
-* added "rel"-filter (work in progress)
-* added more aliases
-= 1.3 =
-* added host-meta resource feature (see latest spec)
-= 1.2 =
-* added 404 http error if user doesn't exist
-* added jrd discovery for host-meta
-= 1.1 =
-* fixed an odd problem with lower WordPress versions
-* added support for the http://wordpress.org/extend/plugins/extended-profile/ (thanks to Singpolyma)
-= 1.0.1 =
-* api improvements
-= 1.0 =
-* basic simple-seb-discovery
-* json support
-* some small improvements
-= 0.9.1 =
-* some changes to support http://unhosted.org
-= 0.9 =
-* OStatus improvements
-* Better uri handling
-* Identifier overview (more to come)
-* Added filters
-* Added functions to get a users webfingers
-= 0.7 =
-* Added do_action param (for future OStatus plugin)
-* Author-Url as Webfinger-Identifier
-= 0.5 =
-* Initial release
+> WebFinger is used to discover information about people or other
+> entities on the Internet that are identified by a URI using
+> standard Hypertext Transfer Protocol (HTTP) methods over a secure
+> transport.  A WebFinger resource returns a JavaScript Object
+> Notation (JSON) object describing the entity that is queried.
+> The JSON object is referred to as the JSON Resource Descriptor (JRD).
+
+(quote from the [RFC](http://tools.ietf.org/html/rfc7033))
 
 == Installation ==
 
@@ -63,3 +32,120 @@ more doku soon!
 3. ...and that's it :)
 
 == Frequently Asked Questions ==
+
+= How to extend the JRD file =
+
+You can add your own links or properties like that:
+
+    function oexchange_target_link($array) {
+      $array["links"][] = array("rel" => "http://oexchange.org/spec/0.8/rel/resident-target",
+        "href" => "http://example.com",
+        "type" => "application/xrd+xml");
+      return $array;
+    }
+    add_filter('webfinger', 'oexchange_target_link');
+
+= Add alternate file/output formats =
+
+You can add your own links or properties like that:
+
+    function render_xrd($webfinger) {
+      // set custom header();
+
+      // JRD to XRD code
+
+      exit;
+    }
+    add_action('webfinger_render', 'render_xrd', 5);
+
+You can find a detailed example here <https://github.com/pfefferle/wordpress-webfinger-legacy>
+
+= The spec =
+
+WebFinger is specified as [RFC 7033](http://tools.ietf.org/html/rfc7033)
+
+= The WebFinger community page =
+
+Please visit <http://webfinger.net>
+
+== Upgrade Notice ==
+
+= 3.0.0 =
+
+This versions drops classic WebFinger support to keep the plugin short and simple. All legacy stuff is bundled in this new plugin <https://github.com/pfefferle/wordpress-webfinger-legacy>
+
+== Changelog ==
+
+Project maintined on github at
+[pfefferle/wordpress-webfinger](https://github.com/pfefferle/wordpress-webfinger).
+
+= 3.0.0 =
+
+* added correct error-responses
+* remove legacy support for XRD and host-meta (props to Will Norris)
+
+= 2.0.1 =
+
+* small bugfix
+
+= 2.0.0 =
+
+* complete refactoring
+* removed simple-web-discovery
+* more filters and actions
+* works without /.well-known/ plugin
+
+= 1.4.0 =
+
+* small fixes
+* added "webfinger" as well-known uri
+
+= 1.3.1 =
+
+* added "rel"-filter (work in progress)
+* added more aliases
+
+= 1.3 =
+
+* added host-meta resource feature (see latest spec)
+
+= 1.2 =
+
+* added 404 http error if user doesn't exist
+* added jrd discovery for host-meta
+
+= 1.1 =
+
+* fixed an odd problem with lower WordPress versions
+* added support for the http://wordpress.org/extend/plugins/extended-profile/ (thanks to Singpolyma)
+
+= 1.0.1 =
+
+* api improvements
+
+= 1.0 =
+
+* basic simple-seb-discovery
+* json support
+* some small improvements
+
+= 0.9.1 =
+
+* some changes to support http://unhosted.org
+
+= 0.9 =
+
+* OStatus improvements
+* Better uri handling
+* Identifier overview (more to come)
+* Added filters
+* Added functions to get a users webfingers
+
+= 0.7 =
+
+* Added do_action param (for future OStatus plugin)
+* Author-Url as Webfinger-Identifier
+
+= 0.5 =
+
+* Initial release
