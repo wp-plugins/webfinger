@@ -1,67 +1,65 @@
-=== WebMention ===
+=== Webfinger ===
 Contributors: pfefferle
 Donate link: http://14101978.de
-Tags: webmention, pingback, trackback, linkback
+Tags: OpenID, XRD, well-known, XML, Discovery, host-meta, Webfinger, diso, OStatus, OStatus Stack, simple web discovery, swd
 Requires at least: 2.7
-Tested up to: 3.8
-Stable tag: 2.1.2
+Tested up to: 3.5.1
+Stable tag: 2.0.1
 
-WebMention for WordPress!
+Webfinger for WordPress!
 
 == Description ==
 
-Enables [WebMention](http://webmention.org/) support for WordPress.
+Webfinger: http://tools.ietf.org/html/draft-ietf-appsawg-webfinger
 
-WebMention is a simple and modern alternative to the Pingback/Trackback protocol.
-
-== Frequently Asked Questions ==
-
-= What are WebMentions? =
-
-[WebMention](http://webmention.org) is a simple way to automatically notify any URL when you link to it on your site. From the receivers perpective, it's a way to request notification when other sites link to it.
-
-It’s a modern alternative to Pingback and other forms of Linkback.
-
-= How can I send WebMentions =
-
-You can use the `send_webmention($source, $target)` function and pass a source and a target or you can fire an action like `do_action('send_webmention', $source, $target)`.
+more doku soon!
 
 == Changelog ==
-
-Project maintined on github at [pfefferle/wordpress-webmention](https://github.com/pfefferle/wordpress-webmention).
-
-= 2.1.2 =
-
-* now ready to use in a bundle
-
-= 2.1.1 =
-
-* nicer feedback for the WebMention endpoint
-
-= 2.1.0 =
-
-* nicer `title` and `content` discovery
-* added post-id to `webmention_links` filter
-* improved `publish_post_hook` function
-
 = 2.0.1 =
-
-* small fixes
-* nicer excerpt extractor
-
+* small bugfix
 = 2.0.0 =
-
-initial release
+* complete refactoring
+* removed simple-web-discovery
+* more filters and actions
+* works without /.well-known/ plugin
+= 1.4.0 =
+* small fixes
+* added "webfinger" as well-known uri
+= 1.3.1 =
+* added "rel"-filter (work in progress)
+* added more aliases
+= 1.3 =
+* added host-meta resource feature (see latest spec)
+= 1.2 =
+* added 404 http error if user doesn't exist
+* added jrd discovery for host-meta
+= 1.1 =
+* fixed an odd problem with lower WordPress versions
+* added support for the http://wordpress.org/extend/plugins/extended-profile/ (thanks to Singpolyma)
+= 1.0.1 =
+* api improvements
+= 1.0 =
+* basic simple-seb-discovery
+* json support
+* some small improvements
+= 0.9.1 =
+* some changes to support http://unhosted.org
+= 0.9 =
+* OStatus improvements
+* Better uri handling
+* Identifier overview (more to come)
+* Added filters
+* Added functions to get a users webfingers
+= 0.7 =
+* Added do_action param (for future OStatus plugin)
+* Author-Url as Webfinger-Identifier
+= 0.5 =
+* Initial release
 
 == Installation ==
 
-1. Upload the `webmention`-folder to the `/wp-content/plugins/` directory
+1. Upload the `webfinger`-folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the *Plugins* menu in WordPress
 3. ...and that's it :)
 
-== Upgrade Notice ==
-
-= 2.0.0 =
-
-This plugin doesn't support the microformts stuff mentioned in the IndieWebCamp Wiki.
-To enable semantik linkbacks you have to use <https://github.com/pfefferle/wordpress-semantic-linkbacks>
+== Frequently Asked Questions ==
